@@ -1,0 +1,95 @@
+USE ASSIGNMENT;
+drop TABLE SD_SALES;
+
+
+CREATE OR REPLACE TABLE SD_SALES(
+order_id varchar(50),	
+order_date date PRIMARY KEY,	
+ship_date date,	
+ship_mode varchar(100),	
+customer_name	varchar(30),
+segment varchar(100),	
+state varchar(100),	
+country varchar(100),	
+market	varchar(100),
+region varchar(100),	
+product_id	varchar(100),
+category varchar(100),
+sub_category varchar(100),	
+product_name varchar(200),	
+sales number(10,2),	
+quantity int,
+discount number(10,2),	
+profit	varchar(20),
+shipping_cost number(10,2),	
+order_priority	varchar(20),
+year varchar(4)
+);
+
+SELECT * FROM SD_SALES;
+-- 2. Change the Primary key to Order Id Column.
+ALTER TABLE SD_SALES
+MODIFY COLUMN order_id varchar(50) PRIMARY KEY;
+
+
+-- 3. Check the data type for Order date and Ship date and mention in what data type it should be?
+DESCRIBE TABLE SD_SALES;
+
+-- 4. Create a new column called order_extract and extract the number after the last ‘–‘from Order ID column.
+ALTER TABLE SD_SALES
+ADD COLUMN order_extract varchar(30);
+
+UPDATE SD_SALES
+SET order_extract = substr(order_id,9); -- FOR INSERT VALUES AS last ‘–‘from Order ID column
+
+SELECT * FROM SD_SALES;
+
+-- 5. Create a new column called Discount Flag and categorize it based on discount. Use ‘Yes’ if the discount is greater than zero else ‘No’.
+
+ALTER TABLE SD_SALES 
+ADD COLUMN Discount_Flag varchar(10);
+                                    /*FOR CREATE A NEW COLUMN USED ALTER COMMAND, IF I DIRECTLY USE CASE WHEN
+                                    SO TEMP TABLE CREATED THAT'S WHY I USED ALTER COMMAND AND THEN BY THE HELP
+                                    OF UPDATE AND CASE WHEN I INSERT YES , NO VALUES IN THE COLUMN
+                                    */
+
+UPDATE sd_sales
+SET Discount_Flag =
+(CASE 
+    WHEN DISCOUNT >= 1 THEN 'YES'
+    ELSE 'NO'
+ END );
+SELECT * FROM SD_SALES;
+
+
+-- 6. Create a new column called process days and calculate how many days it takes for each order id to process from the order to its shipment.
+ALTER TABLE SD_SALES
+ADD COLUMN Process_Days int;
+
+UPDATE SD_SALES
+SET Process_Days =  (ship_date - order_date);
+
+SELECT * FROM SD_SALES;
+
+
+/*
+7. Create a new column called Rating and then based on the Process dates give rating like given below.
+a. If process days less than or equal to 3days then rating should be 5
+b. If process days are greater than 3 and less than or equal to 6 then rating should be 4
+c. If process days are greater than 6 and less than or equal to 10 then rating should be 3
+d. If process days are greater than 10 then the rating should be 2
+
+*/
+ALTER TABLE SD_SALES
+ADD COLUMN Rating int;
+
+UPDATE SD_SALES
+SET Rating =
+CASE
+WHEN Process_Days <= 3 THEN 5
+WHEN Process_Days >= 3 AND Process_Days <= 6 THEN 4
+WHEN Process_Days >= 6 AND Process_Days <= 10 THEN 3
+ELSE 2
+END;
+
+SELECT * FROM SD_SALES;
